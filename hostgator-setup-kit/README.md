@@ -40,7 +40,7 @@ bash install.sh
 > contrato desse modo. Se preferir instalar por conta própria, responda `n` e rode
 > `curl -fsSL https://get.docker.com | sh` antes.
 
-O instalador pergunta o que precisa (domínio, chaves do Supabase e da Anthropic,
+O instalador pergunta o que precisa (domínio, chaves do Supabase e da OpenAI,
 e-mail/senha do admin), gera o resto e sobe tudo.
 
 > Modo não-interativo: copie `.env.hostgator.example` (do repositório) para `.env`,
@@ -83,7 +83,7 @@ Owner/Admin. Não dá para hospedar vários clientes numa conta só.
 | VPS (Docker) | HostGator — VPS com Docker (n8n/OpenClaw/GatorClaw). Outras hospedagens com Docker também servem — se a sua já tiver proxy próprio nas portas 80/443, [veja aqui](#vps-que-já-vem-com-proxy-próprio-hostinger-coolify-dokploy) |
 | Domínio | Registro de domínio (aponte um A-record pro IP do VPS) |
 | Banco de dados | Conta grátis no [supabase.com](https://supabase.com) (3 chaves + connection string) |
-| IA | Chave da [Anthropic](https://console.anthropic.com) |
+| IA | Chave da [OpenAI](https://platform.openai.com/api-keys) |
 | WhatsApp | Seu número — conectado por QR code no onboarding |
 
 ## Requisitos do VPS

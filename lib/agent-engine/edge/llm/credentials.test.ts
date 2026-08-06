@@ -5,7 +5,12 @@ vi.mock("@/lib/crypto/aes_gcm", () => ({
   decryptKey: () => "chave-byok-da-org",
 }));
 
-import { resolveOrgLlmConfig, LlmNotConfiguredError, type LlmEdgeConfig } from "./credentials";
+import {
+  llmEdgeConfigFromEnv,
+  resolveOrgLlmConfig,
+  LlmNotConfiguredError,
+  type LlmEdgeConfig,
+} from "./credentials";
 
 /** Pool falso: 1ª query devolve settings->'llm', 2ª devolve credenciais BYOK. */
 function poolFake(settingsLlm: unknown, credenciais: unknown[]) {
@@ -21,6 +26,12 @@ function poolFake(settingsLlm: unknown, credenciais: unknown[]) {
 const SEM_BYOK: unknown[] = [];
 
 describe("resolveOrgLlmConfig — chave de plataforma por provider", () => {
+  it("propaga OPENAI_API_KEY do ambiente para o fallback do agente", () => {
+    expect(llmEdgeConfigFromEnv({ OPENAI_API_KEY: "sk-proj-plataforma" })).toMatchObject({
+      openaiApiKey: "sk-proj-plataforma",
+    });
+  });
+
   it("usa a chave OpenAI do ambiente quando a org não tem BYOK", async () => {
     // O defeito de origem: existia fallback de env só para a Anthropic. A
     // transcrição de áudio chama o Whisper (OpenAI), e numa org que usa

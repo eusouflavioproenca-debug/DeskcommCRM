@@ -100,7 +100,7 @@ pnpm dev
 
 App: <http://localhost:3000> · Health check: <http://localhost:3000/api/v1/health>
 
-> 🆕 **¿Primera vez? No te saltes pasos.** [`docs/SETUP.md`](docs/SETUP.md) es el tutorial completo paso a paso de **todas las integraciones** (Supabase, WAHA, Anthropic, Upstash, Sentry, Resend, Nuvemshop) — hecho para quien nunca configuró nada de esto. ~60–90 min de cero a la app funcionando. *(La documentación está en portugués de Brasil; ¡las traducciones son bienvenidas!)*
+> 🆕 **¿Primera vez? No te saltes pasos.** [`docs/SETUP.md`](docs/SETUP.md) es el tutorial completo paso a paso de **todas las integraciones** (Supabase, WAHA, OpenAI, Upstash, Sentry, Resend, Nuvemshop) — hecho para quien nunca configuró nada de esto. ~60–90 min de cero a la app funcionando. *(La documentación está en portugués de Brasil; ¡las traducciones son bienvenidas!)*
 
 ---
 
@@ -117,7 +117,7 @@ App: <http://localhost:3000> · Health check: <http://localhost:3000/api/v1/heal
 | **WhatsApp** | WAHA Plus (engine NOWEB) | Multi-tenant, retry, S3 |
 | **Colas** | Tabla `event_log` + workers (cron) | Sin Inngest/Trigger en el MVP |
 | **Rate limit** | Upstash Redis (sliding window) | Serverless, el free tier alcanza |
-| **AI** | Vercel AI SDK v7 (providers Anthropic/Google/OpenAI v4) vía AI Gateway | Fallback automático, ZDR |
+| **AI** | OpenAI mediante Vercel AI SDK v7 | Atención, tools, transcripción y RAG |
 | **Validación** | Zod | Input externo, env, payloads |
 | **Observabilidad** | Sentry (con `beforeSend` sanitizado) | Sin PII en los breadcrumbs |
 | **Hosting** | Vercel (app) + HostGator VPS Turing/SP (WAHA) | Edge + servidor dedicado para WhatsApp; datacenter en Brasil |
@@ -233,7 +233,7 @@ Este es un proyecto **self-hosted**: cada persona ejecuta el CRM en su **propia 
 ## 🙏 Agradecimientos
 
 - **WAHA** ([devlikeapro](https://waha.devlikeapro.com/)) — engine de WhatsApp.
-- **Supabase**, **Vercel**, **Anthropic** (Claude), **shadcn/ui**.
+- **Supabase**, **Vercel**, **OpenAI**, **shadcn/ui**.
 - La comunidad que llevó Deskcomm del e-commerce a clínicas, inmobiliarias, infoproductos y más allá — ustedes definieron lo que este proyecto es.
 
 ---

@@ -15,8 +15,7 @@
 3. [Supabase — banco + auth + storage](#1-supabase--banco--auth--storage)
 4. [Upstash Redis — rate limit + idempotência](#2-upstash-redis--rate-limit--idempotência)
 5. [WAHA — WhatsApp](#3-waha--whatsapp)
-6. [Anthropic + Vercel AI Gateway — IA](#4-anthropic--vercel-ai-gateway--ia)
-7. [OpenAI — embeddings do RAG](#5-openai--embeddings-do-rag)
+6. [OpenAI — IA](#4-openai--ia)
 8. [Sentry — monitoramento de erros](#6-sentry--monitoramento-de-erros)
 9. [Resend — email transacional](#7-resend--email-transacional)
 10. [Nuvemshop — integração e-commerce](#8-nuvemshop--integração-e-commerce)
@@ -58,8 +57,7 @@ Se você quer rodar o app o mais rápido possível com o mínimo viável:
 3. [Upstash Redis](#2-upstash-redis--rate-limit--idempotência) — rate limit é gate de várias rotas.
 
 **🟡 Pra testar features de IA (+10 min):**
-4. [Anthropic](#4-anthropic--vercel-ai-gateway--ia) ou Vercel AI Gateway.
-5. [OpenAI](#5-openai--embeddings-do-rag) — embeddings do RAG.
+4. [OpenAI](#4-openai--ia) — atendimento, transcrição e embeddings do RAG.
 
 **🟡 Pra testar WhatsApp (+15 min):**
 6. [WAHA](#3-waha--whatsapp) + ngrok (precisa URL pública).
@@ -250,53 +248,23 @@ Confira em <http://localhost:3030/dashboard/> que o WAHA está respondendo (UI d
 
 ---
 
-## 4. Anthropic + Vercel AI Gateway — IA
+## 4. OpenAI — IA
 
-**O que é:** O cérebro da IA conversacional (Claude). Usamos o **Vercel AI Gateway** preferencialmente (fallback automático entre provedores, observability, zero data retention) e o Anthropic direto como fallback. **Custo:** pay-per-use. Anthropic dá $5 de crédito grátis ao cadastrar.
+**O que é:** A OpenAI é o provedor principal do atendimento, da transcrição de áudio e dos embeddings do RAG. O modelo padrão do agente é `gpt-5.6-terra`; classificadores usam `gpt-5.6-luna`. **Custo:** pay-per-use.
 
-### Opção A — Vercel AI Gateway (recomendado)
-
-1. Acesse <https://vercel.com> → faça login.
-2. No dashboard → **AI** (no menu lateral) → **Get started with AI Gateway**.
-3. Clique **Create API Key** → nome `deskcomm-dev` → copie a chave.
-
-```env
-AI_GATEWAY_API_KEY=<chave-do-gateway>
-AI_GATEWAY_BASE_URL=https://ai-gateway.vercel.sh/v1
-VERCEL_AI_GATEWAY_URL=https://ai-gateway.vercel.sh/v1
-```
-
-> 💡 Com o Gateway, o código usa strings tipo `"anthropic/claude-sonnet-4-6"` — o Gateway resolve qual provedor chamar. Se Anthropic estiver fora, ele tenta o backup automaticamente.
-
-### Opção B — Anthropic direto (fallback ou se preferir)
-
-1. Acesse <https://console.anthropic.com> → **Sign Up**. 💳
-2. Adicione método de pagamento (eles dão $5 de crédito grátis).
-3. **Settings → API Keys → Create Key** → nome `deskcomm-dev` → copie.
-
-```env
-ANTHROPIC_API_KEY=sk-ant-api03-...
-```
-
-> ⚠️ Se as duas chaves estiverem vazias, o worker `ai-response-worker` pula com `skip="ai_gateway_key_missing"` — o app sobe normal, só não responde com IA. Em dev tá ok. Em prod, configure pelo menos uma das duas.
-
----
-
-## 5. OpenAI — embeddings do RAG
-
-**O que é:** Usado **só** pra gerar embeddings (vetores) das bases de conhecimento dos tenants pro chatbot RAG. Não usamos GPT pra gerar texto — esse trabalho é do Claude. **Custo:** baratíssimo. `text-embedding-3-small` = $0.02 / 1M tokens.
-
-1. Acesse <https://platform.openai.com> → **Sign up**. 💳
-2. Adicione método de pagamento (eles não dão mais crédito grátis em conta nova).
-3. **API Keys → Create new secret key** → nome `deskcomm-dev-embeddings` → copie.
+1. Acesse <https://platform.openai.com> → **Sign up**.
+2. Adicione método de pagamento.
+3. Em **API Keys**, crie uma chave secreta para o DeskcommCRM.
 
 ```env
 OPENAI_API_KEY=sk-proj-...
 ```
 
+> ⚠️ Sem `OPENAI_API_KEY`, o app sobe, mas o atendimento por IA, a transcrição e o RAG ficam indisponíveis. Em produção, configure-a.
+
 ---
 
-## 6. Sentry — monitoramento de erros
+## 5. Sentry — monitoramento de erros
 
 **O que é:** Captura erros, stack traces e performance. Sem isso, você só sabe que o app quebrou quando o cliente reclama. **Free tier:** 5k erros/mês, 10k performance units/mês.
 

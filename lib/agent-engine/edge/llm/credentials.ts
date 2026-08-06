@@ -2,8 +2,9 @@
  * Config LLM por org, pós-fusão (PORT-NOTES): a credencial BYOK vive em
  * `ai_provider_credentials` do CRM (AES-256-GCM via lib/crypto/aes_gcm — colunas
  * api_key_encrypted/api_key_iv/api_key_tag) e os knobs de modelo/params/teto vivem
- * em `organizations.settings->'llm'`. Sem BYOK, o fallback é a chave de plataforma
- * do env (ANTHROPIC_API_KEY) — só para provider anthropic. O plaintext da chave
+ * em `organizations.settings->'llm'`. Sem BYOK, o fallback padrão é a chave de
+ * plataforma OPENAI_API_KEY; ANTHROPIC_API_KEY continua suportada para organizações
+ * legadas. O plaintext da chave
  * existe apenas em memória do processo no instante da chamada; nunca em log.
  *
  * A config é lida do DB A CADA chamada (resolveOrgLlmConfig) — trocar modelo/
@@ -36,6 +37,7 @@ export interface LlmEdgeConfig {
 
 export function llmEdgeConfigFromEnv(env: {
   ANTHROPIC_API_KEY?: string;
+  OPENAI_API_KEY?: string;
   LLM_CACHE_TTL?: string;
 }): LlmEdgeConfig {
   const ttl = env.LLM_CACHE_TTL ?? '1h';
@@ -44,6 +46,7 @@ export function llmEdgeConfigFromEnv(env: {
   }
   return {
     ...(env.ANTHROPIC_API_KEY ? { anthropicApiKey: env.ANTHROPIC_API_KEY } : {}),
+    ...(env.OPENAI_API_KEY ? { openaiApiKey: env.OPENAI_API_KEY } : {}),
     cacheTtl: ttl,
   };
 }
@@ -53,7 +56,7 @@ export class LlmNotConfiguredError extends Error {
   override readonly name = 'llm_not_configured';
   constructor() {
     super(
-      'org sem credencial LLM utilizável — cadastre uma chave BYOK ativa/validada em ai_provider_credentials ou defina ANTHROPIC_API_KEY (fallback de plataforma, só provider anthropic)',
+      'org sem credencial LLM utilizável — cadastre uma chave BYOK ativa/validada em ai_provider_credentials ou defina OPENAI_API_KEY (fallback de plataforma para o provider OpenAI)',
     );
   }
 }
@@ -72,7 +75,7 @@ export interface OrgLlmConfig {
 // shape errado cai no default, nunca derruba o turno.
 const llmSettingsSchema = z
   .object({
-    provider: z.string().min(1).catch('anthropic'),
+    provider: z.string().min(1).catch('openai'),
     default_model: z.string().min(1).nullable().catch(null),
     params: z.record(z.string(), z.unknown()).catch({}),
     enabled_models: z.array(z.string()).catch([]),
@@ -80,7 +83,7 @@ const llmSettingsSchema = z
   })
   .passthrough()
   .catch({
-    provider: 'anthropic',
+    provider: 'openai',
     default_model: null,
     params: {},
     enabled_models: [],
@@ -90,7 +93,7 @@ const llmSettingsSchema = z
 /**
  * Resolve a config LLM da org: knobs de organizations.settings->'llm' + credencial
  * BYOK mais recente ativa/validada de ai_provider_credentials (decifrada com
- * aes_gcm). Sem BYOK → fallback cfg.anthropicApiKey (só anthropic). Sem nada →
+ * aes_gcm). Sem BYOK → fallback da chave de plataforma do provider. Sem nada →
  * LlmNotConfiguredError. Chamada a cada run — troca de config vale no run seguinte.
  */
 /**

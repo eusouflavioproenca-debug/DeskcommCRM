@@ -2,8 +2,8 @@
  * Vercel AI Gateway wrapper.
  *
  * Centralises model routing so the rest of the codebase only references model
- * strings like `"anthropic/claude-sonnet-4-6"`. Lazy initialisation: if
- * `AI_GATEWAY_API_KEY` (or `ANTHROPIC_API_KEY` as fallback) is missing we
+ * strings like `"openai/gpt-5.6-terra"`. Lazy initialisation: if
+ * `AI_GATEWAY_API_KEY` (or `OPENAI_API_KEY` as fallback) is missing we
  * deliberately do NOT throw at import time — `isAiGatewayConfigured()` lets
  * callers skip gracefully.
  *
@@ -22,21 +22,23 @@ import { env } from "@/lib/env";
 export const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
 export type ModelId =
-  | "anthropic/claude-sonnet-5"
-  | "anthropic/claude-opus-5"
-  | "anthropic/claude-haiku-4-5"
+  | "openai/gpt-5.6-terra"
+  | "openai/gpt-5.6-luna"
   | "openai/text-embedding-3-small"
   // Allow arbitrary tenant-configured strings without losing autocomplete on the canonical ones.
   | (string & {});
 
-export const DEFAULT_BOT_MODEL: ModelId = "anthropic/claude-sonnet-5";
-export const DEFAULT_CLASSIFIER_MODEL: ModelId = "anthropic/claude-haiku-4-5";
+export const DEFAULT_BOT_MODEL: ModelId = "openai/gpt-5.6-terra";
+export const DEFAULT_CLASSIFIER_MODEL: ModelId = "openai/gpt-5.6-luna";
 export const DEFAULT_EMBEDDING_MODEL: ModelId = "openai/text-embedding-3-small";
 
 export function isAiGatewayConfigured(): boolean {
   return (
     Boolean(env.AI_GATEWAY_API_KEY) ||
     Boolean(env.OPENROUTER_API_KEY) ||
+    Boolean(env.OPENAI_API_KEY) ||
+    // Mantém instalações legadas com credenciais Anthropic cadastradas; os
+    // defaults e a instalação nova continuam exclusivamente OpenAI.
     Boolean(env.ANTHROPIC_API_KEY)
   );
 }

@@ -20,12 +20,12 @@ const envSchema = z.object({
   // service-role. Mesmos valores do .env.local do app.
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  // Chave LLM de plataforma (fallback quando a org não tem BYOK em
-  // ai_provider_credentials). Opcional no boot: sem ela e sem BYOK, o turno
-  // falha com erro instrutivo — nunca silêncio.
+  // Chaves LLM de plataforma. OPENAI_API_KEY é o fallback padrão quando a org
+  // não tem BYOK; ANTHROPIC_API_KEY permanece apenas para organizações legadas.
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  OPENAI_API_KEY: z.string().min(1).optional(),
   // Modelo default do agente quando a org não define o dela (knob, nunca constante).
-  AGENT_DEFAULT_MODEL: z.string().min(1).default('claude-sonnet-4-5'),
+  AGENT_DEFAULT_MODEL: z.string().min(1).default('gpt-5.6-terra'),
   // Teto de conexões por pool do pg. Sem valor = pg decide (default 10).
   DB_POOL_MAX: z.coerce.number().int().positive().optional(),
   // Knobs da fila — defaults conservadores, documentados no .env.example.

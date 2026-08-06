@@ -17,7 +17,7 @@ Seu domínio  →  Servidor VPS (HostGator)  →  DeskcommCRM rodando
                         ├─ o CRM (site + painel)
                         ├─ o WhatsApp (conectado por QR)
                         └─ os robôs de IA
-Banco de dados: Supabase (grátis)   ·   IA: Anthropic (paga por uso)
+Banco de dados: Supabase (grátis)   ·   IA: OpenAI (paga por uso)
 ```
 
 ---
@@ -28,9 +28,9 @@ Banco de dados: Supabase (grátis)   ·   IA: Anthropic (paga por uso)
 |---|---|---|
 | **Servidor VPS** | HostGator (links abaixo) | pago (mensal) |
 | **Banco de dados** | [supabase.com](https://supabase.com) | grátis |
-| **IA** | [console.anthropic.com](https://console.anthropic.com) | pago por uso |
+| **IA** | [platform.openai.com](https://platform.openai.com) | pago por uso |
 
-Crie a conta do Supabase e da Anthropic agora (leva 2 min cada). O VPS a gente
+Crie a conta do Supabase e da OpenAI agora (leva 2 min cada). O VPS a gente
 contrata no passo 1.
 
 ---
@@ -147,7 +147,7 @@ Agora escolha um dos dois caminhos:
    > resolva os erros você mesmo."*
 
 3. Ele **baixa o projeto sozinho**, lê as instruções de instalação e conduz tudo —
-   pedindo o domínio, as chaves do Supabase e da Anthropic, e o e-mail/senha do admin
+   pedindo o domínio, as chaves do Supabase e da OpenAI, e o e-mail/senha do admin
    **uma de cada vez**, e resolvendo qualquer tropeço.
 
 > Não precisa baixar nem enviar nenhum arquivo `.zip`: o projeto é público e o Claude
@@ -196,7 +196,7 @@ Pronto — as mensagens do seu número começam a cair no CRM.
 
 ## Passo 8 — Coloque a IA pra trabalhar (opcional)
 
-Na área de **Agentes de IA**, cole a sua **chave da Anthropic** e configure o robô
+Na área de **Agentes de IA**, cole a sua **chave da OpenAI** e configure o robô
 (nome, tom de voz, base de conhecimento). A IA passa a sugerir e responder dentro das
 regras que você definir.
 

@@ -10,11 +10,11 @@ import { runModelCall, type LlmEdgeConfig } from '../edge/llm/run-model-call';
 import type { Logger } from '../obs/logger';
 import { aggregateFollowupOutcomes, type FlowOutcomeStat } from '../../followup/outcome-stats';
 
-const JUDGE_MODEL = 'claude-haiku-4-5';
+const JUDGE_MODEL = 'gpt-5.6-luna';
 // O distiller PRECISA de modelo próprio: o flywheel roda org-wide sem turno/agent
 // para herdar, então sem isto ele cai no settings.llm.default_model — não setado
 // em self-host configurado pela tela — e a rodada falha "modelo LLM não definido".
-const DISTILLER_MODEL = 'claude-haiku-4-5';
+const DISTILLER_MODEL = 'gpt-5.6-luna';
 const DIMENSION = 'memory_hygiene';
 const DATASET = 'live';
 
@@ -163,7 +163,7 @@ export async function runFlywheelOnce(
     const { rowCount } = await pool.query(
       `insert into flywheel_judge_verdicts
          (organization_id, dataset, trace_id, dimension, verdict, option_order, judge_family, model, provenance, run_id)
-       values ($1,$2,$3,$4,$5,$6,'anthropic',$7,$8,$9)
+       values ($1,$2,$3,$4,$5,$6,'openai',$7,$8,$9)
        on conflict (dataset, trace_id, dimension) do nothing`,
       [
         turn.organization_id,

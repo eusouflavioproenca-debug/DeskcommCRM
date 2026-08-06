@@ -115,7 +115,7 @@ pnpm dev
 
 App: <http://localhost:3000> · Health check: <http://localhost:3000/api/v1/health>
 
-> 🆕 **Primeira vez? Não pula etapa.** [`docs/SETUP.md`](docs/SETUP.md) é o tutorial completo passo a passo de **todas as integrações** (Supabase, WAHA, Anthropic, Upstash, Sentry, Resend, Nuvemshop) — feito pra quem nunca configurou nada disso antes. ~60–90 min do zero ao app rodando.
+> 🆕 **Primeira vez? Não pula etapa.** [`docs/SETUP.md`](docs/SETUP.md) é o tutorial completo passo a passo de **todas as integrações** (Supabase, WAHA, OpenAI, Upstash, Sentry, Resend, Nuvemshop) — feito pra quem nunca configurou nada disso antes. ~60–90 min do zero ao app rodando.
 
 ---
 
@@ -132,7 +132,7 @@ App: <http://localhost:3000> · Health check: <http://localhost:3000/api/v1/heal
 | **WhatsApp** | WAHA Plus (engine NOWEB) | Multi-tenant, retry, S3 |
 | **Filas** | `event_log` table + workers (cron) | Sem Inngest/Trigger no MVP |
 | **Rate limit** | Upstash Redis (sliding window) | Serverless, free tier suficiente |
-| **AI** | Vercel AI SDK v7 (providers Anthropic/Google/OpenAI v4) via AI Gateway | Fallback automático, ZDR |
+| **AI** | OpenAI via Vercel AI SDK v7 | Atendimento, tools, transcrição e RAG |
 | **Validação** | Zod | Input externo, env, payloads |
 | **Observability** | Sentry (scrub em erro, transação, span e breadcrumb) | Telemetria opt-in no install |
 | **Hospedagem** | Vercel (app) + Hostgator VPS Turing/SP (WAHA) | Edge + dedicado pra WhatsApp; datacenter Brasil |
@@ -313,7 +313,7 @@ Este é um projeto **self-host**: cada pessoa roda o CRM na **própria infraestr
 - **WAHA** ([devlikeapro](https://waha.devlikeapro.com/)) — engine WhatsApp.
 - **Supabase** — Postgres + Auth + Storage + Realtime numa stack só.
 - **Vercel** — hosting + AI Gateway.
-- **Anthropic** (Claude) — IA conversacional.
+- **OpenAI** — IA conversacional, transcrição e embeddings.
 - **shadcn/ui** — base de componentes.
 - A comunidade que nos levou do e-commerce pra clínicas, imobiliárias, infoprodutos e além — vocês definiram o que este projeto é.
 

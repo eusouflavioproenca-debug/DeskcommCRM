@@ -1828,7 +1828,7 @@ export async function runAgentTurn(
   // derivado textual (já embutido em openingText via LeadContextMessage) cobre sozinho.
   const nativeParts = await buildNativeMediaParts({
     messages: effectiveContext.messages,
-    provider: agentConfig?.provider ?? 'anthropic',
+    provider: agentConfig?.provider ?? 'openai',
     model: agentConfig?.model ?? '',
     multimodalInput: agentConfig?.multimodalInput ?? false,
     admin: deps.crmCfg.supabase,

@@ -285,22 +285,8 @@ v_db_url() {
   return 1
 }
 
-v_anthropic() {
-  case "$1" in sk-ant-*) ;; *) echo "A chave da Anthropic começa com 'sk-ant-'. Pegue em console.anthropic.com > API Keys."; return 1;; esac
-  local code
-  code="$(curl -s -o /dev/null -w '%{http_code}' -m 20 https://api.anthropic.com/v1/models \
-    -H "x-api-key: $1" -H "anthropic-version: 2023-06-01" 2>/dev/null || echo 000)"
-  case "$code" in
-    2*) return 0;;
-    000) c_ylw "  ⚠ não consegui checar a chave online; sigo com ela."; return 0;;
-    401) echo "A Anthropic recusou essa chave (401). Confira se está ativa e se copiou inteira."; return 1;;
-    *)   c_ylw "  ⚠ a Anthropic respondeu ${code} ao testar a chave; sigo com ela."; return 0;;
-  esac
-}
-
 v_openai() {
-  [ -z "$1" ] && return 0   # opcional
-  case "$1" in sk-*) ;; *) echo "A chave da OpenAI começa com 'sk-'. Pegue em platform.openai.com > API keys (ou deixe em branco)."; return 1;; esac
+  case "$1" in sk-*) ;; *) echo "A chave da OpenAI começa com 'sk-'. Pegue em platform.openai.com > API keys."; return 1;; esac
   local code
   code="$(curl -s -o /dev/null -w '%{http_code}' -m 20 https://api.openai.com/v1/models \
     -H "Authorization: Bearer $1" 2>/dev/null || echo 000)"
@@ -882,8 +868,7 @@ FIELDS=(
   "NEXT_PUBLIC_SUPABASE_ANON_KEY|Supabase anon key (Settings > API)||v_anon||"
   "SUPABASE_SERVICE_ROLE_KEY|Supabase service_role key (Settings > API)||v_service|secret|"
   "SUPABASE_DB_URL|Supabase connection string — Session pooler, modo URI (Settings > Database)||v_db_url|secret|"
-  "ANTHROPIC_API_KEY|Chave da Anthropic — a IA que atende (console.anthropic.com)||v_anthropic|secret|"
-  "OPENAI_API_KEY|Chave da OpenAI — ouvir áudios do WhatsApp e usar a base de conhecimento (Enter pula)||v_openai|secret|opcional"
+  "OPENAI_API_KEY|Chave da OpenAI — atendimento, áudios do WhatsApp e base de conhecimento (platform.openai.com)||v_openai|secret|"
   "OWNER_EMAIL|E-mail do primeiro admin (dono)||v_email||"
   "OWNER_PASSWORD|Senha do primeiro admin (mínimo 8 caracteres)||v_password|secret|"
   "APP_NAME|Nome que aparece na interface (Enter para o padrão)|DeskcommCRM|||"
@@ -893,7 +878,7 @@ field_at() { IFS='|' read -r F_VAR F_PROMPT F_DEF F_VAL F_SEC F_OPT <<< "${FIELD
 
 if [ "$NONINTERACTIVE" = 0 ]; then
   c_dim "Dica: em qualquer pergunta, digite 'voltar' para refazer a anterior."
-  c_ylw "A chave da OpenAI é opcional, mas sem ela a IA não ouve áudio nem consulta a base de conhecimento."
+  c_ylw "A chave da OpenAI é usada pelo atendimento, pela transcrição de áudio e pela base de conhecimento."
 fi
 
 i=0
@@ -1071,7 +1056,6 @@ umask 077
   printf '# imagem pública para trocar o texto por logo na sidebar. Ver lib/branding.ts.\n'
   envq APP_NAME "$APP_NAME"
   envq APP_LOGO_URL "${APP_LOGO_URL:-}"
-  envq ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
   envq AI_GATEWAY_API_KEY "${AI_GATEWAY_API_KEY:-}"
   printf '# OpenRouter: alternativa ao AI Gateway para o chat da IA. A ordem de\n'
   printf '# resolução é AI_GATEWAY_API_KEY > OPENROUTER_API_KEY > provider direto,\n'
@@ -1079,9 +1063,8 @@ umask 077
   printf '# BASE_URL vazia = https://openrouter.ai/api/v1 (só mude se usa proxy).\n'
   envq OPENROUTER_API_KEY "${OPENROUTER_API_KEY:-}"
   envq OPENROUTER_BASE_URL "${OPENROUTER_BASE_URL:-}"
-  printf '# OpenAI: transcrição dos áudios do WhatsApp (Whisper) + embeddings do RAG.\n'
-  printf '# Opcional — sem ela a IA responde sem a base e pede o áudio em texto.\n'
-  envq OPENAI_API_KEY "${OPENAI_API_KEY:-}"
+  printf '# OpenAI: atendimento, transcrição dos áudios do WhatsApp (Whisper) e embeddings do RAG.\n'
+  envq OPENAI_API_KEY "$OPENAI_API_KEY"
   printf '# Telemetria de erros (você escolheu isto durante a instalação).\n'
   printf '#   "off"  = não envia nada.\n'
   printf '#   vazio  = só ERRO pro Sentry da comunidade, com CPF/telefone/e-mail\n'

@@ -90,7 +90,7 @@ async function publishFirstVersion(
   const { data: model } = await admin
     .from("ai_models")
     .select("model_id")
-    .eq("provider", "anthropic")
+    .eq("provider", "openai")
     .eq("is_default_for_provider", true)
     .limit(1)
     .maybeSingle();
@@ -102,11 +102,11 @@ async function publishFirstVersion(
       agent_id: agent.id,
       version_number: 1,
       system_prompt: systemPrompt,
-      provider: "anthropic",
+      provider: "openai",
       // Fallback do modelo vem da main (catálogo do 0104); o canal vem daqui
       // (listagem que exclui arquivado). O hunk pedia as DUAS metades: ficar com
       // um lado só perderia o modelo atual ou o filtro de canal excluído.
-      model: (model?.model_id as string) ?? "claude-sonnet-5",
+      model: (model?.model_id as string) ?? "gpt-5.6-terra",
       channel_session_id: canal.id,
       status: "published",
       published_at: new Date().toISOString(),

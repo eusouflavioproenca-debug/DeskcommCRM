@@ -101,7 +101,7 @@ pnpm dev
 
 App: <http://localhost:3000> · Health check: <http://localhost:3000/api/v1/health>
 
-> 🆕 **First time? Don't skip steps.** [`docs/SETUP.md`](docs/SETUP.md) is the complete step-by-step tutorial for **every integration** (Supabase, WAHA, Anthropic, Upstash, Sentry, Resend, Nuvemshop) — written for people who have never configured any of this. ~60–90 min from zero to a running app. *(Docs are in Brazilian Portuguese; translations welcome!)*
+> 🆕 **First time? Don't skip steps.** [`docs/SETUP.md`](docs/SETUP.md) is the complete step-by-step tutorial for **every integration** (Supabase, WAHA, OpenAI, Upstash, Sentry, Resend, Nuvemshop) — written for people who have never configured any of this. ~60–90 min from zero to a running app. *(Docs are in Brazilian Portuguese; translations welcome!)*
 
 ---
 
@@ -118,7 +118,7 @@ App: <http://localhost:3000> · Health check: <http://localhost:3000/api/v1/heal
 | **WhatsApp** | WAHA Plus (NOWEB engine) | Multi-tenant, retry, S3 |
 | **Queues** | `event_log` table + workers (cron) | No Inngest/Trigger in the MVP |
 | **Rate limit** | Upstash Redis (sliding window) | Serverless, free tier is enough |
-| **AI** | Vercel AI SDK v7 (Anthropic/Google/OpenAI providers v4) via AI Gateway | Automatic fallback, ZDR |
+| **AI** | OpenAI via Vercel AI SDK v7 | Support, tools, transcription and RAG |
 | **Validation** | Zod | External input, env, payloads |
 | **Observability** | Sentry (sanitized `beforeSend`) | No PII in breadcrumbs |
 | **Hosting** | Vercel (app) + HostGator VPS Turing/SP (WAHA) | Edge + dedicated box for WhatsApp; Brazil datacenter |
@@ -234,7 +234,7 @@ This is a **self-hosted** project: each person runs the CRM on their **own infra
 ## 🙏 Acknowledgements
 
 - **WAHA** ([devlikeapro](https://waha.devlikeapro.com/)) — WhatsApp engine.
-- **Supabase**, **Vercel**, **Anthropic** (Claude), **shadcn/ui**.
+- **Supabase**, **Vercel**, **OpenAI**, **shadcn/ui**.
 - The community that took Deskcomm from e-commerce to clinics, real estate, info-products and beyond — you defined what this project is.
 
 ---

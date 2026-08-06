@@ -76,7 +76,7 @@ export async function loadActiveRouter(
   const classifierModel =
     typeof cfg.classifier_model === 'string' && cfg.classifier_model.trim() !== ''
       ? cfg.classifier_model
-      : 'claude-haiku-4-5';
+      : 'gpt-5.6-luna';
   const sticky = typeof cfg.sticky === 'boolean' ? cfg.sticky : true;
   const minConfidence =
     typeof cfg.min_confidence === 'number' && cfg.min_confidence >= 0 && cfg.min_confidence <= 1
