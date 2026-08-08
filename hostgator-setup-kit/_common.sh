@@ -4,6 +4,7 @@ set -euo pipefail
 
 COMPOSE="docker-compose.prod.yml"
 COMPOSE_TRAEFIK="docker-compose.traefik.yml"
+COMPOSE_EASYPANEL="docker-compose.easypanel.yml"
 
 # Proxy reverso desta instalação. Vem do .env (load_env), com default 'caddy' —
 # ou seja, toda instalação que já existe continua exatamente como está.
@@ -18,6 +19,8 @@ COMPOSE_TRAEFIK="docker-compose.traefik.yml"
 dc() {
   if [ "${REVERSE_PROXY:-caddy}" = "traefik" ]; then
     docker compose -f "$COMPOSE" -f "$COMPOSE_TRAEFIK" "$@"
+  elif [ "${REVERSE_PROXY:-caddy}" = "easypanel" ]; then
+    docker compose -f "$COMPOSE" -f "$COMPOSE_EASYPANEL" "$@"
   else
     docker compose -f "$COMPOSE" "$@"
   fi
@@ -29,6 +32,8 @@ dc() {
 dc_files() {
   if [ "${REVERSE_PROXY:-caddy}" = "traefik" ]; then
     printf -- '-f %s -f %s' "$COMPOSE" "$COMPOSE_TRAEFIK"
+  elif [ "${REVERSE_PROXY:-caddy}" = "easypanel" ]; then
+    printf -- '-f %s -f %s' "$COMPOSE" "$COMPOSE_EASYPANEL"
   else
     printf -- '-f %s' "$COMPOSE"
   fi
@@ -88,6 +93,11 @@ veredito_rede_do_proxy() {  # veredito_rede_do_proxy <driver encontrado> <rede> 
 # Define TRAEFIK_NETWORK quando ela vem vazia — de propósito, é o mesmo default
 # que o instalador grava no .env.
 garantir_rede_do_proxy() {
+  if [ "${REVERSE_PROXY:-caddy}" = "easypanel" ]; then
+    docker network inspect easypanel >/dev/null 2>&1 \
+      || die "A rede Docker externa 'easypanel' não existe. O kit não a cria nem altera."
+    return 0
+  fi
   [ "${REVERSE_PROXY:-caddy}" = "traefik" ] || return 0
   local nossa drv erro
   nossa="$(rede_reservada_do_proxy)"

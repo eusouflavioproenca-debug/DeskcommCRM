@@ -22,6 +22,7 @@ COMUNIDADE_URL="https://lp-comunidade.automatiklabs.com.br"
 REPO_DIR="${REPO_DIR:-deskcommcrm}"
 COMPOSE="docker-compose.prod.yml"
 COMPOSE_TRAEFIK="docker-compose.traefik.yml"
+COMPOSE_EASYPANEL="docker-compose.easypanel.yml"
 NONINTERACTIVE=0
 [ "${1:-}" = "--yes" ] && NONINTERACTIVE=1
 
@@ -31,6 +32,8 @@ NONINTERACTIVE=0
 dc() {
   if [ "${REVERSE_PROXY:-caddy}" = "traefik" ]; then
     docker compose -f "$COMPOSE" -f "$COMPOSE_TRAEFIK" "$@"
+  elif [ "${REVERSE_PROXY:-caddy}" = "easypanel" ]; then
+    docker compose -f "$COMPOSE" -f "$COMPOSE_EASYPANEL" "$@"
   else
     docker compose -f "$COMPOSE" "$@"
   fi
@@ -38,6 +41,8 @@ dc() {
 dc_files() {
   if [ "${REVERSE_PROXY:-caddy}" = "traefik" ]; then
     printf -- '-f %s -f %s' "$COMPOSE" "$COMPOSE_TRAEFIK"
+  elif [ "${REVERSE_PROXY:-caddy}" = "easypanel" ]; then
+    printf -- '-f %s -f %s' "$COMPOSE" "$COMPOSE_EASYPANEL"
   else
     printf -- '-f %s' "$COMPOSE"
   fi
@@ -807,6 +812,11 @@ e, se for mesmo um Traefik, ponha REVERSE_PROXY=traefik no .env e rode de novo."
   esac
 fi
 
+case "$REVERSE_PROXY" in
+  caddy|traefik|easypanel) ;;
+  *) die "REVERSE_PROXY inválido: '$REVERSE_PROXY'. Use caddy, traefik ou easypanel." ;;
+esac
+
 # Fica FORA do `case` porque quem põe REVERSE_PROXY=traefik no .env à mão — o
 # caminho que o painel de bloqueio logo acima ENSINA — pula o `case` inteiro e
 # chegava no bloco da rede com a variável vazia, para morrer em "Não consegui
@@ -1031,21 +1041,18 @@ umask 077
   envq APP_PULL_POLICY "always"
   envq DOMAIN "$DOMAIN"
   envq ACME_EMAIL "$ACME_EMAIL"
-  printf '# Proxy reverso: "caddy" (o kit sobe o dele nas portas 80/443) ou "traefik"\n'
+  printf '# Proxy reverso: "caddy", "traefik" ou "easypanel".\n'
   printf '# (o VPS já tem um Traefik nessas portas — Hostinger, Coolify, Dokploy...).\n'
   printf '# Em "traefik" entra o docker-compose.traefik.yml, que desliga o Caddy e\n'
-  printf '# publica o app por labels. TRAEFIK_* só é lido nesse modo.\n'
+  printf '# publica o app por labels. Em "easypanel", não sobe Caddy nem\n'
+  printf '# docker-compose.traefik.yml: só conecta o app à rede externa easypanel.\n'
   envq REVERSE_PROXY "$REVERSE_PROXY"
-  # O default mora aqui, junto dos irmãos TRAEFIK_* logo abaixo, e não numa
-  # atribuição solta lá atrás: em modo caddy ninguém DECIDE esta variável, e
-  # depender de uma linha distante para ela existir é o tipo de laço que um
-  # refactor do bloco de proxy corta sem perceber. Com `set -u` o preço é a VPS
-  # limpa — a instalação mais comum de todas — parar aqui e deixar o .env pela
-  # metade, com o bloco do Traefik verde em todos os testes.
-  envq TRAEFIK_NETWORK "${TRAEFIK_NETWORK:-traefik}"
-  envq TRAEFIK_ENTRYPOINT_HTTP "${TRAEFIK_ENTRYPOINT_HTTP:-web}"
-  envq TRAEFIK_ENTRYPOINT "${TRAEFIK_ENTRYPOINT:-websecure}"
-  envq TRAEFIK_CERTRESOLVER "${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+  if [ "$REVERSE_PROXY" = "traefik" ]; then
+    envq TRAEFIK_NETWORK "${TRAEFIK_NETWORK:-traefik}"
+    envq TRAEFIK_ENTRYPOINT_HTTP "${TRAEFIK_ENTRYPOINT_HTTP:-web}"
+    envq TRAEFIK_ENTRYPOINT "${TRAEFIK_ENTRYPOINT:-websecure}"
+    envq TRAEFIK_CERTRESOLVER "${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+  fi
   envq NEXT_PUBLIC_SUPABASE_URL "$NEXT_PUBLIC_SUPABASE_URL"
   envq NEXT_PUBLIC_SUPABASE_ANON_KEY "$NEXT_PUBLIC_SUPABASE_ANON_KEY"
   envq SUPABASE_SERVICE_ROLE_KEY "$SUPABASE_SERVICE_ROLE_KEY"
@@ -1366,3 +1373,7 @@ $(c_grn "  ─── A comunidade ───────────────�
                    (derruba tudo; depois rode o install.sh de novo)
 
 DONE
+
+if [ "$REVERSE_PROXY" = "easypanel" ]; then
+  c_ylw "EasyPanel: configure o domínio ${DOMAIN} no painel apontando para o serviço 'app', porta interna 3000."
+fi

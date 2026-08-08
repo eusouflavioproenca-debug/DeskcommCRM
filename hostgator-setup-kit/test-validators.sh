@@ -93,9 +93,8 @@ ok "rejeita string de outro projeto"     reject v_db_url "postgresql://postgres.
 ok "rejeita o que não é URL de Postgres" reject v_db_url "aws-1-us-west-2.pooler.supabase.com"                                                                     "começa com postgresql"
 
 echo "chaves de IA e senha"
-ok "rejeita chave Anthropic com prefixo errado" reject v_anthropic "sk-proj-abc123" "começa com 'sk-ant-'"
 ok "rejeita chave OpenAI com prefixo errado"    reject v_openai    "minha-chave"    "começa com 'sk-'"
-ok "aceita OpenAI vazia (é opcional)"           pass   v_openai    ""
+ok "rejeita OpenAI vazia (é obrigatória)"       reject v_openai    ""              "começa com 'sk-'"
 ok "rejeita senha curta"                        reject v_password  "1234567"        "muito curta"
 ok "aceita senha de 8+"                         pass   v_password  "12345678"
 
@@ -625,6 +624,21 @@ cf_ok "dono pela coluna Ports, --yes → segue"               segue    0 1
 cf_ok "eleito pela varredura host, interativo → pergunta"   pergunta 1 0
 cf_ok "eleito pela varredura host, --yes → recusa"          recusa   1 1
 
+echo "proxy reverso: EasyPanel"
+(
+  REVERSE_PROXY=easypanel
+  if [ "$(dc_files)" = "-f docker-compose.prod.yml -f docker-compose.easypanel.yml" ]; then
+    printf '  ✓ usa somente o override do EasyPanel\n'
+  else
+    printf '  ✗ escolheu arquivos de compose errados: %s\n' "$(dc_files)"; exit 1
+  fi
+  grep -q 'caddy-nao-usado-com-easypanel' ../docker-compose.easypanel.yml \
+    && grep -q 'name: easypanel' ../docker-compose.easypanel.yml \
+    && grep -q 'external: true' ../docker-compose.easypanel.yml \
+    && printf '  ✓ desliga Caddy e usa a rede externa easypanel\n' \
+    || { printf '  ✗ override EasyPanel incompleto\n'; exit 1; }
+) || fail=1
+
 # ── Fixture de VPS: os scripts do kit rodam DE VERDADE contra dublês ────────
 # Os blocos de unidade acima guardam as FUNÇÕES; os de integração abaixo guardam
 # o CAMINHO INTEIRO, que é onde esta correção já falhou uma vez. O ramo do modo
@@ -648,7 +662,7 @@ NEXT_PUBLIC_SUPABASE_URL='https://abcdefghijklmnop.supabase.co'
 NEXT_PUBLIC_SUPABASE_ANON_KEY='$(mkjwt anon abcdefghijklmnop)'
 SUPABASE_SERVICE_ROLE_KEY='$(mkjwt service_role abcdefghijklmnop)'
 SUPABASE_DB_URL='postgresql://postgres.abcdefghijklmnop:senha@aws-1-sa-east-1.pooler.supabase.com:5432/postgres'
-ANTHROPIC_API_KEY='sk-ant-teste'
+OPENAI_API_KEY='sk-teste'
 OWNER_EMAIL='eu@exemplo.com.br'
 OWNER_PASSWORD='senha12345'"
 
@@ -659,6 +673,7 @@ montar_vps() {
   VPS_RAIZ="$raiz"; VPS_PROJ="$raiz/$pasta"; VPS_LOG="$raiz/docker.log"
   mkdir -p "$raiz/bin" "$VPS_PROJ"
   cp install.sh update.sh backup.sh _common.sh "$raiz/"
+  cp ../docker-compose.easypanel.yml "$raiz/"
   : > "$VPS_PROJ/docker-compose.prod.yml"
   cat > "$raiz/bin/docker"
   # Só o v_supabase_url exige resposta online (000 reprova); os outros toleram.

@@ -97,6 +97,15 @@ Owner/Admin. Não dá para hospedar vários clientes numa conta só.
 
 ### VPS que já vem com proxy próprio (Hostinger, Coolify, Dokploy…)
 
+#### EasyPanel (Docker Swarm)
+
+Se o VPS já usa EasyPanel com Traefik e a rede externa `easypanel`, declare
+`REVERSE_PROXY=easypanel` no `.env` antes de rodar o instalador. Nesse modo o kit
+não sobe Caddy, não usa `docker-compose.traefik.yml` e não toca as portas 80/443;
+somente o serviço `app` entra na rede `easypanel`, mantendo os demais serviços na
+rede interna do CRM. Ao terminar, configure o domínio no EasyPanel apontando para
+o serviço `app`, porta interna `3000`.
+
 Algumas hospedagens entregam a VPS com um **Traefik** já ocupando as portas 80/443 — é ele
 que dá HTTPS automático ao que o painel instala. O Caddy do kit quer as mesmas portas e não
 sobe. O instalador **detecta isso sozinho** e grava `REVERSE_PROXY=traefik` no `.env`; a

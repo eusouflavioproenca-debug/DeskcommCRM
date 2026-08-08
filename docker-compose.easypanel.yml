@@ -1,0 +1,21 @@
+# DeskcommCRM — override para VPS com EasyPanel e Traefik já existentes.
+#
+# Este arquivo não cria nem configura o Traefik. Ele apenas conecta o `app` à
+# rede externa `easypanel`, preservando a rede `internal` do DeskcommCRM para
+# Redis, WAHA, scheduler e worker. Configure o domínio no EasyPanel apontando
+# para o serviço `app`, porta interna 3000.
+
+services:
+  app:
+    networks:
+      - internal
+      - easypanel
+
+  # Sem profile ativo, o Compose não cria o Caddy nem tenta ocupar 80/443.
+  caddy:
+    profiles: ["caddy-nao-usado-com-easypanel"]
+
+networks:
+  easypanel:
+    external: true
+    name: easypanel
