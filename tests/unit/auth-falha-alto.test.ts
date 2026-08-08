@@ -21,6 +21,7 @@ const consultas: { platformAdmins: unknown; memberships: unknown } = {
   platformAdmins: { data: null, error: null },
   memberships: { data: [], error: null },
 };
+const filtrosMembership: Array<[string, ...unknown[]]> = [];
 
 vi.mock("next/headers", () => ({ cookies: async () => ({ getAll: () => [], set: () => {} }) }));
 vi.mock("next/navigation", () => ({ redirect: () => { throw new Error("redirect"); } }));
@@ -38,8 +39,18 @@ vi.mock("@/lib/supabase/server", () => ({
       const resultado = () => consultas[alvo as keyof typeof consultas];
       const chain = {
         select: () => chain,
-        eq: () => chain,
-        is: () => (alvo === "platformAdmins" ? { maybeSingle: async () => resultado() } : resultado()),
+        eq: (column: string, value: unknown) => {
+          if (alvo === "memberships") filtrosMembership.push(["eq", column, value]);
+          return chain;
+        },
+        not: (column: string, operator: string, value: unknown) => {
+          if (alvo === "memberships") filtrosMembership.push(["not", column, operator, value]);
+          return chain;
+        },
+        is: (column: string, value: unknown) => {
+          if (alvo === "memberships") filtrosMembership.push(["is", column, value]);
+          return chain;
+        },
         maybeSingle: async () => resultado(),
         then: (r: (v: unknown) => unknown) => Promise.resolve(resultado()).then(r),
       };
@@ -53,6 +64,7 @@ const { loadAuthUser } = await import("@/lib/auth/server");
 beforeEach(() => {
   consultas.platformAdmins = { data: null, error: null };
   consultas.memberships = { data: [], error: null };
+  filtrosMembership.length = 0;
 });
 
 describe("loadAuthUser — falha de permissão não vira 'sem organização'", () => {
@@ -98,6 +110,12 @@ describe("loadAuthUser — falha de permissão não vira 'sem organização'", (
     const u = await loadAuthUser();
     expect(u?.organizations).toEqual([
       { organization_id: "o1", organization_name: "Acme", role: "admin" },
+    ]);
+    expect(filtrosMembership).toEqual([
+      ["eq", "user_id", "u1"],
+      ["not", "accepted_at", "is", null],
+      ["is", "revoked_at", null],
+      ["eq", "organizations.status", "active"],
     ]);
   });
 });

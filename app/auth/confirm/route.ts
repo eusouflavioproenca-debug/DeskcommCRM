@@ -4,6 +4,7 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { ensureTenantForUser } from "@/lib/auth/provision";
 import { audit } from "@/lib/audit";
+import { cookieSecure } from "@/lib/supabase/cookie-secure";
 
 /**
  * GET /auth/confirm — troca o token do e-mail (token_hash) por uma sessão.
@@ -47,8 +48,9 @@ export async function GET(request: NextRequest) {
     return redirectTo("/login/reset");
   }
 
+  let organizationId: string | undefined;
   try {
-    await ensureTenantForUser(data.user);
+    ({ organizationId } = await ensureTenantForUser(data.user));
   } catch (e) {
     await audit({
       action: "auth.signup_provision_failed",
@@ -66,5 +68,15 @@ export async function GET(request: NextRequest) {
     requestId,
   });
 
-  return redirectTo("/onboarding/welcome");
+  const response = redirectTo("/onboarding/welcome");
+  if (organizationId) {
+    response.cookies.set("active_org", organizationId, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: cookieSecure(),
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  }
+  return response;
 }

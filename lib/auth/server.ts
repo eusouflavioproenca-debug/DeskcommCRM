@@ -17,7 +17,10 @@ const ACTIVE_ORG_COOKIE = "active_org";
 interface RawMembershipRow {
   organization_id: string;
   role: string;
-  organizations: { display_name: string } | { display_name: string }[] | null;
+  organizations:
+    | { display_name: string; status: string }
+    | { display_name: string; status: string }[]
+    | null;
 }
 
 /**
@@ -48,12 +51,16 @@ export async function loadAuthUser(): Promise<AuthUser | null> {
     .is("revoked_at", null)
     .maybeSingle();
 
-  // Org memberships (only active = not revoked, accepted)
+  // Active memberships only. The inner join makes the organization status part
+  // of the authorization predicate instead of merely decorating the result.
+  // This query remains user-scoped and therefore subject to both tables' RLS.
   const { data: rawMemberships, error: membErro } = await supabase
     .from("user_organizations")
-    .select("organization_id, role, organizations(display_name)")
+    .select("organization_id, role, organizations!inner(display_name, status)")
     .eq("user_id", user.id)
-    .is("revoked_at", null);
+    .not("accepted_at", "is", null)
+    .is("revoked_at", null)
+    .eq("organizations.status", "active");
 
   /**
    * FALHA ALTO, não baixo.

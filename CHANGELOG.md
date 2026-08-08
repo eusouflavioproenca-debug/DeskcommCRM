@@ -8,6 +8,10 @@ Se você roda o DeskcommCRM numa VPS, **leia a seção da versão para a qual es
 
 ## [Não lançado]
 
+### Corrigido
+
+- **A primeira organização do usuário podia desaparecer após o login.** A resolução da organização ativa agora exige vínculo aceito, não revogado e organização com status `active`; o signup também grava explicitamente a organização recém-criada como ativa na sessão.
+
 ## [1.2.0] — 2026-08-06
 
 Versão grande: 122 correções e 62 novidades desde a 1.1.0. O tema é o agente de IA deixar de
