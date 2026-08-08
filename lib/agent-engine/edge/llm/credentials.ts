@@ -38,6 +38,16 @@ export interface LlmEdgeConfig {
   cacheTtl?: CacheTtl;
 }
 
+/**
+ * ⚠️ `OPENAI_API_KEY` entra aqui, e não entrava antes — o campo `openaiApiKey`
+ * existia no tipo e era lido em `resolveOrgLlmConfig`, mas NENHUM caminho do
+ * agente o preenchia (só o worker de transcrição de áudio montava a config na
+ * mão). O efeito: numa instalação com a chave da OpenAI no `.env`, um agente com
+ * modelo OpenAI caía em `LlmNotConfiguredError` — a chave estava lá, coletada
+ * pelo instalador, e o turno morria como se não estivesse. Um campo declarado que
+ * ninguém preenche é pior que um campo ausente: faz quem lê o código concluir que
+ * o caminho existe.
+ */
 export function llmEdgeConfigFromEnv(env: {
   ANTHROPIC_API_KEY?: string;
   OPENAI_API_KEY?: string;
