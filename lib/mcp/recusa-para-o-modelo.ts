@@ -2,7 +2,7 @@
  * A recusa de uma capacidade, escrita para o MODELO — e, por tabela, para quem
  * vai ler a resposta dele.
  *
- * ⚠️ POR QUE ISTO EXISTE, medido com LLM real (`gpt-5.6-terra`). Pedi ao agente
+ * ⚠️ POR QUE ISTO EXISTE, medido com LLM real configurado para o atendimento. Pedi ao agente
  * uma etapa nova de funil. Ele tentou, a barreira de papel segurou (nada foi
  * escrito — confirmado no banco), e a frase que chegou ao usuário foi:
  *

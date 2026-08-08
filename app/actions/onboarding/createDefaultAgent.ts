@@ -9,6 +9,7 @@ import { z } from "zod";
 
 import { audit } from "@/lib/audit";
 import { listSelectableChannels, type SelectableChannel } from "@/lib/channels/selectable";
+import { env } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { aiAgentDefaultSchema, type PromptTemplate } from "@/lib/schemas/onboarding";
 import { requireOnboardingCtx, patchOnboardingState, OnboardingError } from "./_shared";
@@ -87,14 +88,6 @@ async function publishFirstVersion(
   const [canal] = canais;
   if (!canal) return { published: false, reason: "no_channel" };
 
-  const { data: model } = await admin
-    .from("ai_models")
-    .select("model_id")
-    .eq("provider", "openai")
-    .eq("is_default_for_provider", true)
-    .limit(1)
-    .maybeSingle();
-
   const { data: version, error: versionErr } = await admin
     .from("ai_agent_versions")
     .insert({
@@ -103,10 +96,9 @@ async function publishFirstVersion(
       version_number: 1,
       system_prompt: systemPrompt,
       provider: "openai",
-      // Fallback do modelo vem da main (catálogo do 0104); o canal vem daqui
-      // (listagem que exclui arquivado). O hunk pedia as DUAS metades: ficar com
-      // um lado só perderia o modelo atual ou o filtro de canal excluído.
-      model: (model?.model_id as string) ?? "gpt-5.6-terra",
+      // O modelo do atendimento vem do ambiente, para que o catálogo não altere
+      // silenciosamente o provedor principal de uma instalação.
+      model: env.OPENAI_AGENT_MODEL,
       channel_session_id: canal.id,
       status: "published",
       published_at: new Date().toISOString(),

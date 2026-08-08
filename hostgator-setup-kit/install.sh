@@ -1065,6 +1065,8 @@ umask 077
   envq OPENROUTER_BASE_URL "${OPENROUTER_BASE_URL:-}"
   printf '# OpenAI: atendimento, transcrição dos áudios do WhatsApp (Whisper) e embeddings do RAG.\n'
   envq OPENAI_API_KEY "$OPENAI_API_KEY"
+  envq OPENAI_AGENT_MODEL "${OPENAI_AGENT_MODEL:-gpt-5.2}"
+  envq OPENAI_CLASSIFIER_MODEL "${OPENAI_CLASSIFIER_MODEL:-gpt-5-mini}"
   printf '# Telemetria de erros (você escolheu isto durante a instalação).\n'
   printf '#   "off"  = não envia nada.\n'
   printf '#   vazio  = só ERRO pro Sentry da comunidade, com CPF/telefone/e-mail\n'

@@ -102,13 +102,14 @@ async function main(): Promise<void> {
   // --- credencial real (o turno morre sem ela) ---
   // A chave Anthropic desta máquina está SEM CRÉDITO (medido direto no provedor:
   // 400 invalid_request_error "credit balance is too low"), então a observação
-  // roda em OpenAI, no `gpt-5.6-terra` — o padrão que a migration 0101 passou a
+  // roda em OpenAI, no modelo configurado em `OPENAI_AGENT_MODEL` — o padrão
   // oferecer. Roda no PADRÃO de propósito: se o catálogo aponta para um modelo
   // que o motor não consegue usar, é o self-hoster que descobre, atendendo.
   // LIMITAÇÃO declarada: o padrão de produção da Anthropic (Sonnet 5) não pôde
   // ser exercitado — a chave Anthropic desta máquina está sem crédito.
   // process.env vence o arquivo: dá para rodar com outra chave sem escrevê-la em disco.
   const key = process.env.OPENAI_API_KEY ?? env.OPENAI_API_KEY;
+  const model = process.env.OPENAI_AGENT_MODEL ?? env.OPENAI_AGENT_MODEL ?? "gpt-5.2";
   if (!key) throw new Error("OPENAI_API_KEY ausente — sem ela não há turno real");
   const label = "Observacao W3 (chave real openai)";
   const { data: credExistente } = await admin
@@ -179,9 +180,9 @@ async function main(): Promise<void> {
        (organization_id, agent_id, version_number, system_prompt, provider, model,
         credential_id, tool_ids, channel_session_id, status, published_at,
         handoff_tool_enabled, cases_enabled, max_steps)
-     values ($1,$2,$7,$3,'openai','gpt-5.6-terra',$4,$5,$6,'published',now(),true,true,12)
+     values ($1,$2,$7,$3,'openai',$8,$4,$5,$6,'published',now(),true,true,12)
      returning id`,
-    [orgId, agenteId, PROMPT, credId, TOOLS, sessaoId, proxima[0]!.n],
+    [orgId, agenteId, PROMPT, credId, TOOLS, sessaoId, proxima[0]!.n, model],
   );
   await pool.query(`update ai_agents set published_version_id = $2 where id = $1`, [
     agenteId,

@@ -29,14 +29,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Env do self-host padrão: SÓ a chave da Anthropic, que é a única que o
 // install.sh exige. É esta combinação que reproduz o defeito.
-const envMock: Record<string, string> = {
+const envMock = vi.hoisted(() => ({
   ANTHROPIC_API_KEY: "sk-ant-teste",
   AI_GATEWAY_API_KEY: "",
   AI_GATEWAY_BASE_URL: "",
   OPENROUTER_API_KEY: "",
   OPENROUTER_BASE_URL: "",
   OPENAI_API_KEY: "",
-};
+} as Record<string, string>));
 vi.mock("@/lib/env", () => ({
   get env() {
     return envMock;

@@ -20,10 +20,11 @@ describe("loadEnv — vazio é ausente (contrato BYOK do README)", () => {
     expect(env.ANTHROPIC_API_KEY).toBeUndefined();
   });
 
-  it("usa OpenAI e gpt-5.6-terra como padrão do agente", () => {
+  it("usa OpenAI e gpt-5.2 como padrão do agente", () => {
     const env = loadEnv({ ...REQUIRED, OPENAI_API_KEY: "sk-proj-openai" });
     expect(env.OPENAI_API_KEY).toBe("sk-proj-openai");
-    expect(env.AGENT_DEFAULT_MODEL).toBe("gpt-5.6-terra");
+    expect(env.OPENAI_AGENT_MODEL).toBe("gpt-5.2");
+    expect(env.OPENAI_CLASSIFIER_MODEL).toBe("gpt-5-mini");
   });
 
   it("opcional ausente = ok; default aplica em knob vazio", () => {

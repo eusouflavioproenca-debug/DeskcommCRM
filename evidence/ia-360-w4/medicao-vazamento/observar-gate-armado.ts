@@ -174,9 +174,9 @@ async function main(): Promise<void> {
        (organization_id, agent_id, version_number, system_prompt, provider, model,
         credential_id, tool_ids, channel_session_id, status, published_at,
         handoff_tool_enabled, cases_enabled, max_steps)
-     values ($1,$2,$7,$3,'openai','gpt-5.6-terra',$4,$5,$6,'published',now(),true,false,12)
+     values ($1,$2,$7,$3,'openai',$8,$4,$5,$6,'published',now(),true,false,12)
      returning id`,
-    [orgId, agenteId, PROMPT, credId, TOOLS, sessaoId, proxima[0]!.n],
+    [orgId, agenteId, PROMPT, credId, TOOLS, sessaoId, proxima[0]!.n, env.OPENAI_AGENT_MODEL ?? 'gpt-5.2'],
   );
   await pool.query('update ai_agents set published_version_id = $2 where id = $1', [
     agenteId,

@@ -290,7 +290,7 @@ async function login(page: Page): Promise<void> {
 async function versaoComAsCapacidades(req: APIRequestContext, agenteId: string): Promise<string> {
   const chave = process.env.QA_LLM_API_KEY;
   const provider = (process.env.QA_LLM_PROVIDER ?? "openai") as "openai" | "anthropic";
-  const modelo = process.env.QA_LLM_MODEL ?? "gpt-5.6-terra";
+  const modelo = process.env.QA_LLM_MODEL ?? process.env.OPENAI_AGENT_MODEL ?? "gpt-5.2";
 
   const canalRes = await req.get(`${APP_URL}/api/v1/channel-sessions`);
   const canalId = ((await canalRes.json()) as { data?: Array<{ id: string }> }).data?.[0]?.id;
@@ -459,7 +459,7 @@ test.describe("QA — o agente usa as mãos que a W4 entregou?", () => {
             tool_calls: chamadas,
             latency_ms: data.latency_ms ?? null,
             cost_cents: data.cost_cents ?? null,
-            model: process.env.QA_LLM_MODEL ?? "gpt-5.6-terra",
+            model: process.env.QA_LLM_MODEL ?? process.env.OPENAI_AGENT_MODEL ?? "gpt-5.2",
             agent_version_id: versaoId,
             medido_em: new Date().toISOString(),
           },

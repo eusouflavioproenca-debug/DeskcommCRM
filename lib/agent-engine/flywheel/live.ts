@@ -7,14 +7,15 @@
 import type pg from 'pg';
 
 import { runModelCall, type LlmEdgeConfig } from '../edge/llm/run-model-call';
+import { openAiClassifierModel } from '../models';
 import type { Logger } from '../obs/logger';
 import { aggregateFollowupOutcomes, type FlowOutcomeStat } from '../../followup/outcome-stats';
 
-const JUDGE_MODEL = 'gpt-5.6-luna';
+const JUDGE_MODEL = openAiClassifierModel();
 // O distiller PRECISA de modelo próprio: o flywheel roda org-wide sem turno/agent
 // para herdar, então sem isto ele cai no settings.llm.default_model — não setado
 // em self-host configurado pela tela — e a rodada falha "modelo LLM não definido".
-const DISTILLER_MODEL = 'gpt-5.6-luna';
+const DISTILLER_MODEL = openAiClassifierModel();
 const DIMENSION = 'memory_hygiene';
 const DATASET = 'live';
 

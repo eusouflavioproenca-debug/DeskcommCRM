@@ -2,7 +2,7 @@
  * ai-sentiment-worker — classifies the sentiment of inbound messages.
  *
  * Consumes `message.received` events (parallel to ai-response-worker).
- * Uses `anthropic/claude-haiku-4-5` via Vercel AI Gateway with generateObject
+ * Uses the configured OpenAI classifier model via Vercel AI Gateway with generateObject
  * and a strict Zod schema so the result is always typed.
  *
  * Design principles (CLAUDE.md):
@@ -23,7 +23,7 @@ import { SENTIMENT_SYSTEM_PROMPT } from "@/lib/ai/prompts/sentiment";
 import type { EventRow } from "@/lib/event-log/dispatcher";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const SENTIMENT_MODEL = DEFAULT_CLASSIFIER_MODEL; // "anthropic/claude-haiku-4-5"
+const SENTIMENT_MODEL = DEFAULT_CLASSIFIER_MODEL;
 const DEFAULT_SENTIMENT_THRESHOLD = 0.3;
 const CLASSIFY_TIMEOUT_MS = 5_000;
 

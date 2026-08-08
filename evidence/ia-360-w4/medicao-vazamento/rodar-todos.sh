@@ -8,7 +8,7 @@ cd "$(dirname "$0")/../../.."
 set -a; . ./.env.local; set +a
 export QA_LLM_API_KEY="${OPENAI_API_KEY}"
 export QA_LLM_PROVIDER=openai
-export QA_LLM_MODEL=gpt-5.6-terra
+export QA_LLM_MODEL="${OPENAI_AGENT_MODEL:-gpt-5.2}"
 export E2E_PORT=3031
 
 rodar() { # $1 = QA_PROMPT ("" p/ operador), $2 = prefixo do cenário

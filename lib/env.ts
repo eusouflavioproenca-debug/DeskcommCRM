@@ -95,6 +95,8 @@ const schema = z.object({
   VERCEL_AI_GATEWAY_URL: z.string().optional().default(""),
   ANTHROPIC_API_KEY: z.string().optional().default(""),
   OPENAI_API_KEY: z.string().optional().default(""),
+  OPENAI_AGENT_MODEL: z.string().min(1).optional().default("gpt-5.2"),
+  OPENAI_CLASSIFIER_MODEL: z.string().min(1).optional().default("gpt-5-mini"),
 
   // Fusão (Fase 4): DONO ÚNICO dos eventos ai_agent.dispatch_requested.
   // 'engine' (default) = o worker agent-engine é o único consumidor (o cron

@@ -10,8 +10,7 @@
 --   GET https://api.anthropic.com/v1/models  → claude-opus-5, claude-sonnet-5,
 --       claude-opus-4-8, claude-sonnet-4-6, claude-haiku-4-5-20251001
 --       (o alias `claude-haiku-4-5` resolve — conferido em /v1/models/<id>)
---   GET https://api.openai.com/v1/models     → gpt-5.6-sol/terra/luna, gpt-5.5,
---       gpt-5.5-pro, gpt-5.4, gpt-5.4-mini, gpt-5.4-nano, gpt-5.4-pro
+--   OpenAI: `gpt-5.2` e `gpt-5-mini`, ids oficiais configurados no app.
 -- Id errado só falha na hora da chamada, com o cliente esperando.
 --
 -- ⚠️ OS IDS DO GOOGLE NÃO FORAM VERIFICADOS — não há chave Google nesta máquina.
@@ -41,12 +40,8 @@ values
   ('anthropic', 'claude-opus-4-8',   'Claude Opus 4.8',
    'Geração anterior do Opus.', 500, 2500, true),
   -- OpenAI
-  ('openai',    'gpt-5.6-sol',       'GPT-5.6 Sol',
-   'O mais capaz da linha 5.6.', 500, 3000, true),
-  ('openai',    'gpt-5.6-terra',     'GPT-5.6 Terra',
-   'Equilíbrio de custo e capacidade da linha 5.6.', 200, 1200, true),
-  ('openai',    'gpt-5.6-luna',      'GPT-5.6 Luna',
-   'O mais barato da linha 5.6, para classificação e tarefas simples.', 20, 120, true),
+  ('openai',    'gpt-5.2',           'GPT-5.2',
+   'Modelo padrão configurável para atendimento e agentes.', 200, 1200, true),
   ('openai',    'gpt-5.5',           'GPT-5.5',              null, 500, 3000, true),
   ('openai',    'gpt-5.5-pro',       'GPT-5.5 Pro',
    'Raciocínio estendido; custo alto.', 3000, 18000, true),
@@ -89,7 +84,7 @@ update public.ai_models set is_default_for_provider = false
 
 update public.ai_models set is_default_for_provider = true
  where (provider = 'anthropic' and model_id = 'claude-sonnet-5')
-    or (provider = 'openai'    and model_id = 'gpt-5.6-terra')
+    or (provider = 'openai'    and model_id = 'gpt-5.2')
     or (provider = 'google'    and model_id = 'gemini-3.5-flash');
 
 -- ---------------------------------------------------------------------------
@@ -102,9 +97,7 @@ values
   ('claude-opus-5',          500,   2500,  'catálogo 0101'),
   ('claude-sonnet-5',        200,   1000,  'catálogo 0101 — introdução até 31/08/2026; depois 300/1500'),
   ('claude-opus-4-8',        500,   2500,  'catálogo 0101'),
-  ('gpt-5.6-sol',            500,   3000,  'catálogo 0101'),
-  ('gpt-5.6-terra',          200,   1200,  'catálogo 0101'),
-  ('gpt-5.6-luna',            20,    120,  'catálogo 0101'),
+  ('gpt-5.2',                200,   1200,  'catálogo 0101'),
   ('gpt-5.5',                500,   3000,  'catálogo 0101'),
   ('gpt-5.5-pro',           3000,  18000,  'catálogo 0101'),
   ('gpt-5.4',                250,   1500,  'catálogo 0101'),

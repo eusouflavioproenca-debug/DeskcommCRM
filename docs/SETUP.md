@@ -250,7 +250,7 @@ Confira em <http://localhost:3030/dashboard/> que o WAHA está respondendo (UI d
 
 ## 4. OpenAI — IA
 
-**O que é:** A OpenAI é o provedor principal do atendimento, da transcrição de áudio e dos embeddings do RAG. O modelo padrão do agente é `gpt-5.6-terra`; classificadores usam `gpt-5.6-luna`. **Custo:** pay-per-use.
+**O que é:** A OpenAI é o provedor principal do atendimento, da transcrição de áudio e dos embeddings do RAG. Os modelos padrão são configuráveis: `gpt-5.2` para o agente e `gpt-5-mini` para classificações rápidas. **Custo:** pay-per-use.
 
 1. Acesse <https://platform.openai.com> → **Sign up**.
 2. Adicione método de pagamento.
@@ -258,6 +258,8 @@ Confira em <http://localhost:3030/dashboard/> que o WAHA está respondendo (UI d
 
 ```env
 OPENAI_API_KEY=sk-proj-...
+OPENAI_AGENT_MODEL=gpt-5.2
+OPENAI_CLASSIFIER_MODEL=gpt-5-mini
 ```
 
 > ⚠️ Sem `OPENAI_API_KEY`, o app sobe, mas o atendimento por IA, a transcrição e o RAG ficam indisponíveis. Em produção, configure-a.

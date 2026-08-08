@@ -12,6 +12,8 @@
  */
 import type pg from 'pg';
 
+import { openAiClassifierModel } from '../models';
+
 export interface RouterMember {
   agentId: string;
   intentName: string;
@@ -76,7 +78,7 @@ export async function loadActiveRouter(
   const classifierModel =
     typeof cfg.classifier_model === 'string' && cfg.classifier_model.trim() !== ''
       ? cfg.classifier_model
-      : 'gpt-5.6-luna';
+      : openAiClassifierModel();
   const sticky = typeof cfg.sticky === 'boolean' ? cfg.sticky : true;
   const minConfidence =
     typeof cfg.min_confidence === 'number' && cfg.min_confidence >= 0 && cfg.min_confidence <= 1

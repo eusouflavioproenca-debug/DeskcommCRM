@@ -24,8 +24,11 @@ const envSchema = z.object({
   // não tem BYOK; ANTHROPIC_API_KEY permanece apenas para organizações legadas.
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
   OPENAI_API_KEY: z.string().min(1).optional(),
-  // Modelo default do agente quando a org não define o dela (knob, nunca constante).
-  AGENT_DEFAULT_MODEL: z.string().min(1).default('gpt-5.6-terra'),
+  // Modelos de plataforma quando a organização não define os dela no banco.
+  OPENAI_AGENT_MODEL: z.string().min(1).default('gpt-5.2'),
+  OPENAI_CLASSIFIER_MODEL: z.string().min(1).default('gpt-5-mini'),
+  // Alias legado, preservado para instalações que já o configuravam.
+  AGENT_DEFAULT_MODEL: z.string().min(1).optional(),
   // Teto de conexões por pool do pg. Sem valor = pg decide (default 10).
   DB_POOL_MAX: z.coerce.number().int().positive().optional(),
   // Knobs da fila — defaults conservadores, documentados no .env.example.

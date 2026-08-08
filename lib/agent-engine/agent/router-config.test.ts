@@ -32,13 +32,13 @@ describe('loadActiveRouter', () => {
     expect(router?.members.map((m) => m.intentName)).toEqual(['suporte', 'vendas']);
   });
 
-  it('config malformada cai nos defaults (haiku, sticky, 0.6)', async () => {
+  it('config malformada cai nos defaults (gpt-5-mini, sticky, 0.6)', async () => {
     const pool = poolSeq([
       { rows: [{ id: 'r1', name: 'X', config: { min_confidence: 'muito' }, fallback_agent_id: null }] },
       { rows: [] },
     ]);
     const router = await loadActiveRouter(pool, 'org1', 'cs1');
-    expect(router?.classifierModel).toBe('claude-haiku-4-5');
+    expect(router?.classifierModel).toBe('gpt-5-mini');
     expect(router?.sticky).toBe(true);
     expect(router?.minConfidence).toBe(0.6);
   });

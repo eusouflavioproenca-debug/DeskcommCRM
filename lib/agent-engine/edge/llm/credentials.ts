@@ -28,6 +28,9 @@ export interface LlmEdgeConfig {
    * a chave do instalador não chegava a lugar nenhum.
    */
   openaiApiKey?: string;
+  /** Modelos de plataforma usados quando a organização não os define no banco. */
+  openaiAgentModel?: string;
+  openaiClassifierModel?: string;
   /**
    * TTL do prefixo estável de cache (knob LLM_CACHE_TTL). Opcional para quem
    * monta a config na mão (testes) — o seam aplica a doutrina '1h' quando ausente.
@@ -38,6 +41,8 @@ export interface LlmEdgeConfig {
 export function llmEdgeConfigFromEnv(env: {
   ANTHROPIC_API_KEY?: string;
   OPENAI_API_KEY?: string;
+  OPENAI_AGENT_MODEL?: string;
+  OPENAI_CLASSIFIER_MODEL?: string;
   LLM_CACHE_TTL?: string;
 }): LlmEdgeConfig {
   const ttl = env.LLM_CACHE_TTL ?? '1h';
@@ -47,6 +52,8 @@ export function llmEdgeConfigFromEnv(env: {
   return {
     ...(env.ANTHROPIC_API_KEY ? { anthropicApiKey: env.ANTHROPIC_API_KEY } : {}),
     ...(env.OPENAI_API_KEY ? { openaiApiKey: env.OPENAI_API_KEY } : {}),
+    openaiAgentModel: env.OPENAI_AGENT_MODEL?.trim() || 'gpt-5.2',
+    openaiClassifierModel: env.OPENAI_CLASSIFIER_MODEL?.trim() || 'gpt-5-mini',
     cacheTtl: ttl,
   };
 }
@@ -171,7 +178,7 @@ export async function resolveOrgLlmConfig(
   return {
     provider,
     apiKey,
-    defaultModel: settings.default_model ?? null,
+    defaultModel: settings.default_model ?? cfg.openaiAgentModel ?? 'gpt-5.2',
     params: settings.params,
     enabledModels: settings.enabled_models,
     monthlyBudgetCents: settings.monthly_budget_cents ?? null,

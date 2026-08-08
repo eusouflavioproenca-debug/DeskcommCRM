@@ -13,7 +13,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const envMock: Record<string, string> = {};
+const envMock = vi.hoisted(() => ({} as Record<string, string>));
 vi.mock("@/lib/env", () => ({
   get env() {
     return envMock;

@@ -2,7 +2,7 @@
  * Vercel AI Gateway wrapper.
  *
  * Centralises model routing so the rest of the codebase only references model
- * strings like `"openai/gpt-5.6-terra"`. Lazy initialisation: if
+ * strings like `"openai/gpt-5.2"`. Lazy initialisation: if
  * `AI_GATEWAY_API_KEY` (or `OPENAI_API_KEY` as fallback) is missing we
  * deliberately do NOT throw at import time — `isAiGatewayConfigured()` lets
  * callers skip gracefully.
@@ -22,14 +22,14 @@ import { env } from "@/lib/env";
 export const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
 export type ModelId =
-  | "openai/gpt-5.6-terra"
-  | "openai/gpt-5.6-luna"
+  | "openai/gpt-5.2"
+  | "openai/gpt-5-mini"
   | "openai/text-embedding-3-small"
   // Allow arbitrary tenant-configured strings without losing autocomplete on the canonical ones.
   | (string & {});
 
-export const DEFAULT_BOT_MODEL: ModelId = "openai/gpt-5.6-terra";
-export const DEFAULT_CLASSIFIER_MODEL: ModelId = "openai/gpt-5.6-luna";
+export const DEFAULT_BOT_MODEL: ModelId = `openai/${env.OPENAI_AGENT_MODEL || "gpt-5.2"}`;
+export const DEFAULT_CLASSIFIER_MODEL: ModelId = `openai/${env.OPENAI_CLASSIFIER_MODEL || "gpt-5-mini"}`;
 export const DEFAULT_EMBEDDING_MODEL: ModelId = "openai/text-embedding-3-small";
 
 export function isAiGatewayConfigured(): boolean {
